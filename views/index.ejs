@@ -1,0 +1,105 @@
+<!DOCTYPE hmtl>
+
+<html>
+
+  <head>
+
+    <!-- ZingChart CDN script -->
+    <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+
+    <style>
+      #chart {
+        height: 300px;
+        width: 300px;
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+    <h1>Employees</h1>
+
+    <!-- EJS loop through employees returned from MongoDB -->
+    <ul>
+
+      <!-- inserts each employee name/age from MongoDB to list -->
+      <% employees.forEach(employee => { %>
+      <li><%= `Name: ${employee.name}, Age: ${employee.age}` %></li>
+      <% }); %>
+
+    </ul>
+
+    <!-- chart container -->
+    <div id="chart"></div>
+
+    <!-- fetches data from api/data page & renders chart from data returned -->
+    <script>
+
+      // creates variable for url we want to fetch
+      const url = 'http://localhost:3000/api/data';
+
+      // fetch call to our /api/data page
+      fetch(url)
+
+        // creates promise to work with response from /api/data
+        .then(res => {
+
+          // throws error if there is a problem fetching page
+          if (!res.ok) {
+
+            // returns error with response text of error
+            throw new Error(res.statusText);
+
+          }
+
+          // returns data from /api/data page in json format to next promise
+          return res.json();
+
+        })
+
+        // creates promise with returned data from previous promise
+        .then(data => {
+
+          // creates employees variable to store JSON data form /api/data
+          let employees = data;
+
+          // creates empty employeeInfo array
+          let employeeInfo = [];
+
+          // loops through data from employee variable
+          employees.forEach(employee => {
+
+            // pushes values from employees variable to empty employeeInfo array
+            employeeInfo.push([employee.name, parseInt(employee.age)]);
+
+          });
+
+          // creates chart const with employeeInfo array
+          const chart = {
+            type: 'bar',
+            series: [
+              {
+                values: employeeInfo
+              }
+            ]
+          };
+
+          // renders zingchart to the page
+          zingchart.render({
+            id: 'chart',
+            data: chart,
+            height: '100%',
+            width: '100%'
+          });
+
+        })
+
+        // catches errors in promise chain
+        .catch(error => console.log('fetch error'));
+
+    </script>
+
+  </body>
+
+</html>
