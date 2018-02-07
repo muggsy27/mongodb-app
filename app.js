@@ -14,11 +14,8 @@ const bodyParser = require('body-parser');
 // imports mongodb node driver & creates const for hosted mongo url
 const MongoClient = require('mongodb').MongoClient;
 
-// hosted mongodb instance url 
+// hosted mongodb instance url
 const url = 'mongodb://test:test@ds161016.mlab.com:61016/employees';
-
-// imports built-in node assert module
-const assert = require('assert');
 
 // sets ejs views folder
 app.set('views', path.join(__dirname, 'views'));
@@ -27,7 +24,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // bodyParser middleware (returns POST requests as JSON)
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(bodyParser.json());
 
 // creates const for name of our database
@@ -37,10 +36,7 @@ const dbName = 'employees';
 app.get('/', (req, res) => {
 
   // opens connection to mongodb
-  MongoClient.connect(url, (err, client) => {
-
-    // checks for error connecting to mongodb
-    assert.equal(null, err);
+  MongoClient.connect(url).then(client => {
 
     // creates const for our database
     const db = client.db(dbName);
@@ -49,21 +45,32 @@ app.get('/', (req, res) => {
     const col = db.collection('employees');
 
     // finds ALL employees in 'employees' collection/converts to array
-    col.find({}).toArray((err, docs) => {
-
-      // checks for error connecting to 'employees' collection
-      assert.equal(null, err);
+    col.find({}).toArray().then(docs => {
 
       // logs message upon finding collection
       console.log('found employees for index');
 
       // renders index ejs template and passes employees array as data
-      res.render('index', {employees: docs});
+      res.render('index', {
+        employees: docs
+      });
 
       // closes connection to mongodb and logs message
       client.close(() => console.log('connection closed'));
 
+    // checks for error in finding 'employees' collection
+    }).catch(err => {
+
+      // logs message upon error in finding 'employees' collection
+      console.log('error finding employees', err);
+
     });
+
+  // checks for error in connecting to mongodb
+  }).catch(err => {
+
+    // logs message upon error connecting to mongodb
+    console.log('error connecting to mongodb', err);
 
   });
 
@@ -84,10 +91,7 @@ app.post('/employees/add', (req, res) => {
   employee.age = req.body.age;
 
   // opens connection to mongodb
-  MongoClient.connect(url, (err, client) => {
-
-    // checks for error connecting to mongodb
-    assert.equal(null, err);
+  MongoClient.connect(url).then(client => {
 
     // creates const for our database
     const db = client.db(dbName);
@@ -96,13 +100,10 @@ app.post('/employees/add', (req, res) => {
     const col = db.collection('employees');
 
     // inserts ONE employee into 'employees' collection
-    col.insertOne(employee, (err, docs) => {
-
-      // checks form error inserting employee to collection
-      assert.equal(null, err);
+    col.insertOne(employee).then(doc => {
 
       // logs message upon inserting employee to 'employees' collection
-      console.log('employee inserted');
+      console.log('employee inserted', doc);
 
       // redirects user back to index page after POST req submit
       res.redirect('/');
@@ -110,7 +111,19 @@ app.post('/employees/add', (req, res) => {
       // closes connection to mongodb and logs message
       client.close(() => console.log('connection closed'));
 
+    // checks for error in inserting employee to 'employees' collection
+    }).catch(err => {
+
+      // logs message upon error in inserting employee to 'employees' collection
+      console.log('error inserting employee', err);
+
     });
+
+  // checks for error in connecting to mongodb
+  }).catch(err => {
+
+    // logs message upon error connecting to mongodb
+    console.log('error connecting to mongodb', err);
 
   });
 
@@ -120,10 +133,7 @@ app.post('/employees/add', (req, res) => {
 app.get('/api/data', (req, res) => {
 
   // opens connection to mongodb
-  MongoClient.connect(url, (err, client) => {
-
-    // checks for error connecting to mongodb
-    assert.equal(null, err);
+  MongoClient.connect(url).then(client => {
 
     // creates const for our database
     const db = client.db(dbName);
@@ -132,10 +142,7 @@ app.get('/api/data', (req, res) => {
     const col = db.collection('employees');
 
     // finds ALL employees in 'employees' collection/converts to array
-    col.find({}).toArray((err, docs) => {
-
-      // checks for error connecting to 'employees' collection
-      assert.equal(null, err);
+    col.find({}).toArray().then(docs => {
 
       // logs message upon finding 'employees' collection
       console.log('found employees for api');
@@ -146,7 +153,19 @@ app.get('/api/data', (req, res) => {
       // closes connection to mongodb and logs message
       client.close(() => console.log('connection closed'));
 
+    // checks for error finding 'employees' collection
+    }).catch(err => {
+
+      // logs message upon error finding 'employees' collection
+      console.log('unable to find employees for api', err);
+
     });
+
+  // checks for error in connecting to mongodb
+  }).catch(err => {
+
+    // logs message upon error connecting to mongodb
+    console.log('error connecting to mongodb', err);
 
   });
 
