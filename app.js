@@ -82,55 +82,55 @@ app.get('/', (req, res) => {
 // creates GET request route for /employees/add page and renders ejs template
 app.get('/employees/add', (req, res) => res.render('employees/add'));
 
-// creates POST request route for /employees/add page
-app.post('/employees/add', (req, res) => {
-
-  // logs message with POST request data
-  console.log(req.body);
-
-  // creates empty employee object/stores POST request data in employee object
-  let employee = {};
-  employee.name = req.body.name;
-  employee.age = req.body.age;
-
-  // opens connection to mongodb
-  MongoClient.connect(url).then(client => {
-
-    // creates const for our database
-    const db = client.db(dbName);
-
-    // creates const for 'employees' collection in database
-    const col = db.collection('employees');
-
-    // inserts ONE employee into 'employees' collection
-    col.insertOne(employee).then(doc => {
-
-      // logs message upon inserting employee to 'employees' collection
-      console.log('employee inserted', doc);
-
-      // redirects user back to index page after POST req submit
-      res.redirect('/');
-
-      // closes connection to mongodb and logs message
-      client.close(() => console.log('connection closed'));
-
-    // checks for error in inserting employee to 'employees' collection
-    }).catch(err => {
-
-      // logs message upon error in inserting employee to 'employees' collection
-      console.log('error inserting employee', err);
-
-    });
-
-  // checks for error in connecting to mongodb
-  }).catch(err => {
-
-    // logs message upon error connecting to mongodb
-    console.log('error connecting to mongodb', err);
-
-  });
-
-});
+// // creates POST request route for /employees/add page
+// app.post('/employees/add', (req, res) => {
+//
+//   // logs message with POST request data
+//   console.log(req.body);
+//
+//   // creates empty employee object/stores POST request data in employee object
+//   let employee = {};
+//   employee.name = req.body.name;
+//   employee.age = req.body.age;
+//
+//   // opens connection to mongodb
+//   MongoClient.connect(url).then(client => {
+//
+//     // creates const for our database
+//     const db = client.db(dbName);
+//
+//     // creates const for 'employees' collection in database
+//     const col = db.collection('employees');
+//
+//     // inserts ONE employee into 'employees' collection
+//     col.insertOne(employee).then(doc => {
+//
+//       // logs message upon inserting employee to 'employees' collection
+//       console.log('employee inserted', doc);
+//
+//       // redirects user back to index page after POST req submit
+//       res.redirect('/');
+//
+//       // closes connection to mongodb and logs message
+//       client.close(() => console.log('connection closed'));
+//
+//     // checks for error in inserting employee to 'employees' collection
+//     }).catch(err => {
+//
+//       // logs message upon error in inserting employee to 'employees' collection
+//       console.log('error inserting employee', err);
+//
+//     });
+//
+//   // checks for error in connecting to mongodb
+//   }).catch(err => {
+//
+//     // logs message upon error connecting to mongodb
+//     console.log('error connecting to mongodb', err);
+//
+//   });
+//
+// });
 
 // creates GET request route for /api/data page
 app.get('/api/data', (req, res) => {
