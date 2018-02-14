@@ -11,13 +11,16 @@ const path = require('path');
 // imports body parser module
 const bodyParser = require('body-parser');
 
+// sets port varaible
+const port = process.env.PORT || 3000;
+
 // imports mongodb node driver & creates const for hosted mongo url
 const MongoClient = require('mongodb').MongoClient;
 
 // hosted mongodb instance url
 const url = 'mongodb://test:test@ds161016.mlab.com:61016/employees';
 
-// sets ejs views folder
+// sets view folder
 app.set('views', path.join(__dirname, 'views'));
 
 // sets view engine
@@ -172,4 +175,4 @@ app.get('/api/data', (req, res) => {
 });
 
 // listens to port 300 and logs message when listening
-app.listen(3000, () => console.log('listening on port 3000'));
+app.listen(port, () => console.log(`listening on ${port}`));
